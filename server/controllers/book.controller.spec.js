@@ -1,6 +1,9 @@
 const expect = require('chai').expect;
 const httpMocks = require('node-mocks-http');
+const sinon = require('sinon');
+
 const controller = require('./book.controller');
+const model = require('../models').book;
 
 describe.only('Books controller', () => {
   describe('When getting a list of books', () => {
@@ -28,8 +31,10 @@ describe.only('Books controller', () => {
 
       const res = httpMocks.createResponse();
 
+      sinon.spy(model, 'create');
+
       return controller.create(req, res).then(() => {
-        return expect(res._getData().dataValues.title).to.eql(book.title);
+        return expect(model.create.getCall(0).args[0].title).to.equal('Test Book');
       });
     });
   });
