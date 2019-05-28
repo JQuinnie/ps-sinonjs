@@ -6,12 +6,10 @@ const model = require('../models').user;
 const wishlist = require('../models').wishlist;
 
 describe('When creating a user', () => {
-  let timer = {};
+  const sandbox = sinon.createSandbox({useFakeTimers: true});
 
   afterEach(() => {
-    wishlist.create.restore && wishlist.create.restore();
-    model.create.restore && model.create.restore();
-    timer.restore && timer.restore();
+    sandbox.restore();
   });
 
   it('Should have a customerSince field', () => {
@@ -25,11 +23,11 @@ describe('When creating a user', () => {
 
     const res = httpMocks.createResponse();
 
-    const newList = sinon.stub(wishlist, 'create');
+    const newList = sandbox.stub(wishlist, 'create');
 
     newList.resolves({dataValues: {id: 1}});
 
-    const userCreate = sinon.spy(model, 'create');
+    const userCreate = sandbox.spy(model, 'create');
 
     return controller.create(req, res).then(() => {
       expect(userCreate.calledWith(sinon.match({
@@ -39,8 +37,6 @@ describe('When creating a user', () => {
   });
 
   it('Should set the customer since field to new Date', () => {
-    timer = sinon.useFakeTimers();
-
     const req = httpMocks.createRequest({
       body: {
         firstName: 'test',
@@ -49,16 +45,18 @@ describe('When creating a user', () => {
       }
     });
 
+    const date = new Date();
+
     const res = httpMocks.createResponse();
 
-    const newList = sinon.stub(wishlist, 'create');
+    const newList = sandbox.stub(wishlist, 'create');
 
     newList.resolves({dataValues: {id: 1}});
 
-    const userCreate = sinon.spy(model, 'create');
+    const userCreate = sandbox.spy(model, 'create');
 
     return controller.create(req, res).then(() => {
-      expect(userCreate.args[0][0].customerSince).to.eql(new Date());
+      expect(userCreate.args[0][0].customerSince).to.eql(date);
     });
   });
 });

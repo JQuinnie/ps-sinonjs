@@ -6,8 +6,10 @@ const model = require('../models').book;
 const transaction = require('../models').transaction;
 
 describe('Books controller', () => {
+  const sandbox = sinon.createSandbox();
+
   afterEach(() => {
-    model.findById.restore && model.findById.restore();
+    sandbox.restore();
   });
 
   describe('When getting a list of books', () => {
@@ -55,7 +57,7 @@ describe('Books controller', () => {
 
         const res = httpMocks.createResponse();
 
-        const find = sinon.stub(model, 'findById');
+        const find = sandbox.stub(model, 'findById');
         find.withArgs(7).resolves(null);
 
 
@@ -75,7 +77,7 @@ describe('Books controller', () => {
 
         const res = httpMocks.createResponse();
 
-        const find = sinon.stub(model, 'findById');
+        const find = sandbox.stub(model, 'findById');
         find.resolves({});
 
 
