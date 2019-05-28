@@ -57,7 +57,6 @@ describe('Books controller', () => {
         const find = sinon.stub(model, 'findById');
         find.withArgs(7).resolves(null);
 
-
         return controller.getById(req, res).then(() => {
           return expect(res.statusCode).to.eql(404);
         });
@@ -77,7 +76,6 @@ describe('Books controller', () => {
         const find = sinon.stub(model, 'findById');
         find.resolves({});
 
-
         return controller.getById(req, res).then(() => {
           return expect(res.statusCode).to.eql(200);
         });
@@ -85,8 +83,8 @@ describe('Books controller', () => {
     });
   });
 
-  describe('When purchasing a book', ()=> {
-    it('Should add a transaction', ()=> {
+  describe('When purchasing a book', () => {
+    it('Should add a transaction', () => {
       const req = httpMocks.createRequest({
         body: {
           amount: 10.97,
@@ -100,11 +98,14 @@ describe('Books controller', () => {
       const res = httpMocks.createResponse();
 
       const tx = sinon.mock(transaction);
-      tx.expects('create').once().withArgs({id: 1, user_id: 23, amount: 10.97}).resolves({});
+      tx.expects('create')
+        .once()
+        .withArgs({ id: 1, user_id: 23, amount: 10.97 })
+        .resolves({});
 
-      return controller.purchase(req, res).then(()=>{
+      return controller.purchase(req, res).then(() => {
         tx.verify();
-      })
-    })
+      });
+    });
   });
 });
