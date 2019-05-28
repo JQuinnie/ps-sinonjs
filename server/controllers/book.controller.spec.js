@@ -3,6 +3,7 @@ const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
 const controller = require('./book.controller');
 const model = require('../models').book;
+const transaction = require('../models').transaction;
 
 describe('Books controller', () => {
   describe('When getting a list of books', () => {
@@ -82,5 +83,28 @@ describe('Books controller', () => {
         });
       });
     });
+  });
+
+  describe('When purchasing a book', ()=> {
+    it('Should add a transaction', ()=> {
+      const req = httpMocks.createRequest({
+        body: {
+          amount: 10.97,
+          user_id: 23
+        },
+        params: {
+          id: 1
+        }
+      });
+
+      const res = httpMocks.createResponse();
+
+      const tx = sinon.mock(transaction);
+      tx.expects('create').once().withArgs({id: 1, user_id: 23, amount: 10.97}).resolves({});
+
+      return controller.purchase(req, res).then(()=>{
+        tx.verify();
+      })
+    })
   });
 });
